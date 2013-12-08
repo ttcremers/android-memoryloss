@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MemoryLoss</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Choose Location</string>
+    <string name="icon_that_represents_device_type">Icon that represents device type</string>
+    <string name="place_filler">Place filler Place filler Place filler Place filler Place filler Place filler</string>
+    <string name="location_explanation_header">Location Explanation</string>
+    <string name="location_explanation_details">Details</string>
+    <string name="total_size">Total Size</string>
+    <string name="file_system">Last Used</string>
+    <string name="service_name">MemoryLoss launch scanner</string>
+
+</resources>
