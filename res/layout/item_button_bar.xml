@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:focusable="false" 
+    android:visibility="gone"
+    android:id="@+id/button_bar" >
+
+    <Button
+        android:id="@+id/button_launch"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="3dp"
+        android:layout_marginLeft="0dp"
+        android:background="@drawable/memory_loss_button"
+        android:text="@string/launch" />
+
+    <Button
+        android:id="@+id/button_playstore"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="3dp"
+        android:background="@drawable/memory_loss_button"
+        android:text="@string/playstore" />
+
+    <Button
+        android:id="@+id/button_uninstall"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="3dp"
+        android:background="@drawable/memory_loss_button"
+        android:text="@string/uninstall" />
+
+</LinearLayout>
