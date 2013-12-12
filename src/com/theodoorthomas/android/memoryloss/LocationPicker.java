@@ -35,6 +35,7 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 		if ( DEVELOPER_MODE ) {
 			Util.strictMode();
 		}				
+		BugSenseHandler.initAndStartSession(this, "ec55b9e6");
 		super.onCreate(savedInstanceState);
         
 		Intent intent = new Intent(this, 

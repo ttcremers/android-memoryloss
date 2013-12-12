@@ -53,6 +53,7 @@ public class LogMonitService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		BugSenseHandler.initAndStartSession(this, "ec55b9e6");
 	}
 
 	@Override
