@@ -1,9 +1,15 @@
 package com.theodoorthomas.android.memoryloss.services;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +17,7 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.IPackageStatsObserver;
@@ -18,90 +25,71 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageStats;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.squareup.otto.Produce;
+import com.bugsense.trace.BugSenseHandler;
 import com.theodoorthomas.android.memoryloss.MainThreadBus;
 import com.theodoorthomas.android.memoryloss.PackageArrayList;
 
 public class LogMonitService extends Service {	
 	private static final String TAG = "MemoryLossService";
-	private static PackageArrayList<PkgInformation> packageLaunchInformation = 
-			PackageArrayList.getInstance();
+	private static final String OBJECT_CACHE_FILE = "object.cache";
+	
+	private PackageArrayList<PkgInformation> packageLaunchInformation;
 
 	private MainThreadBus bus = new MainThreadBus();
 	private PackageManager pm;	
 	
-	private WakeLock mWakeLock;
-	
 	private void updateAppMetaData() {
-		Log.d(TAG, "Updating package stats!....");
+		Log.d(TAG, "Updating package stats!...");
 		getInstalledPackages();
 		getRunningPackages();
-		smartSortPackageInformation();
 		bus.post(packageLaunchInformation);
+		
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = openFileOutput(OBJECT_CACHE_FILE, Context.MODE_PRIVATE);
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+			objectOutputStream.writeObject(packageLaunchInformation);
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, "Error in accessing object cache", e);
+		} catch (IOException e) {
+			Log.e(TAG, "Error comminicating with object cache", e);
+		} finally {
+			try {
+				if ( fileOutputStream != null )
+					fileOutputStream.close();
+			} catch (IOException e) {
+				Log.e(TAG, "Error closing object cache", e);
+			}
+		}
 		Log.d(TAG, "Updating package stats! DONE");
 	}
 	
 	@Override
 	public void onCreate() {
-		super.onCreate();
+		super.onCreate();	
 		BugSenseHandler.initAndStartSession(this, "ec55b9e6");
 	}
 
-	@Override
-	public void onDestroy() {
-		mWakeLock.release();
-		super.onDestroy();
-	}
-	
-	private void smartSortPackageInformation() {
-		Collections.sort(packageLaunchInformation, new Comparator<PkgInformation>() {
-			public int compare(PkgInformation pkgInfo1, PkgInformation pkgInfo2) {
-				long t1 = pkgInfo1.getLastActive().getTime();
-			    long t2 = pkgInfo2.getLastActive().getTime();
-			    if (t2 > t1)
-			    	return -1;
-			    else if (t1 > t2)
-			    	return 1;
-			    else
-			    	return 0;
-			}
-		});
-		Collections.sort(packageLaunchInformation, new Comparator<PkgInformation>() {
-			public int compare(PkgInformation pkgInfo1, PkgInformation pkgInfo2) {
-				long size1 = pkgInfo1.getSize();
-				long size2 = pkgInfo2.getSize();
-				if (size1 == size2)
-					return 0;
-				else if (size1 > size2)
-					return -1;
-				else
-					return 1;
-			}
-		});
-	}
-
-	// As soon as a client connects to the bus send data
-	@Produce public PackageArrayList<PkgInformation> produceAnswer() {
-	    // Assuming 'packageLaunchInformation' is filled.
-		Log.d(TAG, "Client connected to bus, lets send it our latest cached data");
-	    return packageLaunchInformation;
-	}
+//	// As soon as a client connects to the bus send data
+//	@Produce public PackageArrayList<PkgInformation> produceAnswer() {
+//	    // Assuming 'packageLaunchInformation' is filled.
+//		Log.d(TAG, "Client connected to bus, lets send it our latest cached data");
+//	    return packageLaunchInformation;
+//	}
 
 	private void getInstalledPackages() {		
 		List<PackageInfo> list = pm.getInstalledPackages(0);		
 		for (PackageInfo pi : list) {
 			try {
 				ApplicationInfo ai = pm.getApplicationInfo(pi.packageName,0);
-				if (pm.getLaunchIntentForPackage(pi.packageName) != null) {
+				if (pm.getLaunchIntentForPackage(pi.packageName) != null &&
+						!ai.sourceDir.contains("/system")) {
 					if (packageLaunchInformation.contains(pi.packageName)) {
 						PkgInformation pkgInfo = new PkgInformation();
 						pkgInfo.setPackageNamespace(pi.packageName);
@@ -109,7 +97,7 @@ public class LogMonitService extends Service {
 						updatePkgLaunchInfoForApp(pi.packageName, pkgInfo.getSize(), null);
 					} else {
 						PkgInformation pkgInfo = new PkgInformation();
-						pkgInfo.setLastActive(new Date(pi.firstInstallTime));
+						pkgInfo.setLastActive(new Date(pi.lastUpdateTime));
 						pkgInfo.setPackageNamespace(ai.packageName);
 						pkgInfo.setDisplayName((String)
 								getPackageManager().getApplicationLabel(ai));
@@ -134,19 +122,19 @@ public class LogMonitService extends Service {
 				public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
 						throws RemoteException {
 
-					long externalCodeSize = 0;
+					Long externalCodeSize = 0l;
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 						externalCodeSize = pStats.externalCodeSize;
 					}
 					
-					pkgInfo.setSize(pStats.codeSize + 
+					pkgInfo.setSize(Long.valueOf(pStats.codeSize + 
 							pStats.dataSize + 
 							pStats.cacheSize + 
 							pStats.externalDataSize +
 							pStats.externalCacheSize +
 							externalCodeSize +
 							pStats.externalMediaSize +
-							pStats.externalObbSize);
+							pStats.externalObbSize));
 				}
 			});
 		} catch (NoSuchMethodException e) {
@@ -175,12 +163,9 @@ public class LogMonitService extends Service {
 			PkgInformation pkgInfo = packageLaunchInformation.get(i);
 			if ( pkgInfo.getPackageNamespace().equals(processName) ) {	
 				Log.w(TAG, "Updating data for: " + processName+ " to: " + date + " / " + size);
-				if ( date != null) {
-					Log.w(TAG, "Updating date for: " + processName+ " to: " + date);
-				} 
-				Date newDate = date == null ? packageLaunchInformation.get(i).getLastActive() : date;
+				Date newDate = date == null ? pkgInfo.getLastActive() : date;
 				pkgInfo.setLastActive(newDate);
-				long newSize = size == 0 ? packageLaunchInformation.get(i).getSize() : size;
+				Long newSize = size == 0 ? pkgInfo.getSize() : size;
 				pkgInfo.setSize(newSize);
 				packageLaunchInformation.remove(i);
 				packageLaunchInformation.set(i, pkgInfo);
@@ -189,18 +174,6 @@ public class LogMonitService extends Service {
 	}
 	
     private void handleIntent() {
-        // obtain the wake lock
-        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-        mWakeLock.acquire();
-        
-        // check the global background data setting
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        if (!cm.getBackgroundDataSetting()) {
-            stopSelf();
-            return;
-        }
-        
         // do the actual work, in a separate thread
         new PollTask().execute();
     }
@@ -208,7 +181,35 @@ public class LogMonitService extends Service {
 	private class PollTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Void doInBackground(Void... params) {			
+			//Open file and read the saved object back.
+			FileInputStream fileInputStream = null;
+			try {
+				if (new File(OBJECT_CACHE_FILE).exists()) {
+					fileInputStream = openFileInput(OBJECT_CACHE_FILE);
+					//Open File Stream and cast it into array of ItemAttributes
+					ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+					packageLaunchInformation = (PackageArrayList<PkgInformation>)objectInputStream.readObject();
+				} else {
+					packageLaunchInformation = new PackageArrayList<PkgInformation>();
+				}
+			} catch (FileNotFoundException e) {
+				Log.e(TAG, "Error accessing cache file", e);
+			} catch (StreamCorruptedException e) {
+				Log.e(TAG, "Object cache curropted!!", e);
+			} catch (IOException e) {
+				Log.e(TAG, "Error reading object cache", e);
+			} catch (ClassNotFoundException e) {
+				Log.e(TAG, "Error in object cache class (read error)", e);
+			} finally {
+				if ( fileInputStream != null )
+					try {
+						fileInputStream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
+			
 			pm = getPackageManager();
 			updateAppMetaData();
 			return null;
@@ -216,6 +217,7 @@ public class LogMonitService extends Service {
 		
 		@Override
 		protected void onPostExecute(Void result) {
+			// Clean up
 			stopSelf();
 			super.onPostExecute(result);
 		}
@@ -228,8 +230,14 @@ public class LogMonitService extends Service {
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
+	public int onStartCommand(Intent intent, int flags, int startId) {			
 		handleIntent();
 		return Service.START_NOT_STICKY;
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		BugSenseHandler.closeSession(this);
 	}
 }

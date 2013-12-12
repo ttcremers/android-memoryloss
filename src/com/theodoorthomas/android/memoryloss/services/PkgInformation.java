@@ -1,15 +1,18 @@
 package com.theodoorthomas.android.memoryloss.services;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import android.util.Log;
 
-public class PkgInformation {
+public class PkgInformation implements Serializable, Comparable<PkgInformation> {
+	private static final long serialVersionUID = -8770364457873710287L;
+	
 	private Date lastActive;
 	private long size;
 	private String displayName;
 	private String packageNamespace;
-	
+
 	@Override
 	public int hashCode() {
 		return packageNamespace.hashCode();
@@ -50,5 +53,10 @@ public class PkgInformation {
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	@Override
+	public int compareTo(PkgInformation another) {
+		return Long.valueOf(another.getSize()).compareTo(this.getSize());
 	}
 }

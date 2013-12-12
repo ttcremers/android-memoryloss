@@ -1,32 +1,20 @@
 package com.theodoorthomas.android.memoryloss.fragments;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
-import com.theodoorthomas.android.memoryloss.BaseApplication;
-import com.theodoorthomas.android.memoryloss.DevicesListAdapter;
-import com.theodoorthomas.android.memoryloss.MainThreadBus;
-import com.theodoorthomas.android.memoryloss.R;
-import com.theodoorthomas.android.memoryloss.Util;
-import com.theodoorthomas.android.memoryloss.services.PkgInformation;
-import com.theodoorthomas.android.memoryloss.services.ScheduleReciever;
+import java.util.Collections;
+import java.util.Comparator;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.ListFragment;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+
+import com.theodoorthomas.android.memoryloss.DevicesListAdapter;
+import com.theodoorthomas.android.memoryloss.PackageArrayList;
+import com.theodoorthomas.android.memoryloss.R;
+import com.theodoorthomas.android.memoryloss.services.PkgInformation;
 
 public class DeviceListFragment extends ListFragment {
 	private static final String LOG_TAG = "MemoryLoss";
@@ -37,8 +25,17 @@ public class DeviceListFragment extends ListFragment {
 		super.onActivityCreated(savedInstanceState);		
 	}
 
-	public void setAndPopulateAdapter(ArrayList<PkgInformation> packageSizeMeta) {
-		if ( packageSizeMeta != null ) { 
+	public void setAndPopulateAdapter(PackageArrayList<PkgInformation> packageSizeMeta) {
+		if ( packageSizeMeta != null) { 			
+			
+			Collections.sort(packageSizeMeta, new Comparator<PkgInformation>() {
+				@Override
+				public int compare(PkgInformation lhs, PkgInformation rhs) {					
+					return lhs.getLastActive().compareTo(rhs.getLastActive());
+				}
+			});
+			Collections.sort(packageSizeMeta);
+			
 			DevicesListAdapter<File> adapter = 
 				new DevicesListAdapter<File>(getActivity(),
 						R.layout.location_picker_list_row, packageSizeMeta);
@@ -65,7 +62,7 @@ public class DeviceListFragment extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Log.d(LOG_TAG, "List view click: " + id);
-//		listener.onDeviceClicked(data[position]);
+		listener.onDeviceClicked(v, position);
 	}
 	
 	@Override
@@ -80,7 +77,7 @@ public class DeviceListFragment extends ListFragment {
 	 *
 	 */
 	public interface DeviceListInterface {
-		public void onDeviceClicked(File data);
+		public void onDeviceClicked(View v, int position);
 		public void onReadyForPopulation(DeviceListFragment deviceListFragment);
 	}
 }

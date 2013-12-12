@@ -7,17 +7,8 @@ import com.theodoorthomas.android.memoryloss.services.PkgInformation;
 
 public class PackageArrayList<T> extends ArrayList<PkgInformation> {
 	private static final long serialVersionUID = 3232141627726656599L;
-	private static PackageArrayList<PkgInformation> self;
-
-	public static PackageArrayList<PkgInformation> getInstance() {
-		if ( self != null ) {
-			return self;
-		} else {
-			return new PackageArrayList<PkgInformation>();
-		}
-	}
 	
-	private PackageArrayList() {		
+	public PackageArrayList() {		
 		super();
 	}
 

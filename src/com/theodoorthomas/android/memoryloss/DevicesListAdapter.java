@@ -46,14 +46,15 @@ public class DevicesListAdapter<T> extends ArrayAdapter<PkgInformation> {
 		lastUsed.setText(values.get(position).getLastActive().toString());
 		
 		TextView entryDiskSize = 
-				(TextView) rowView.findViewById(R.id.table_value_size);
+				(TextView) rowView.findViewById(R.id.table_entry_size);
 		float diskSizeMBs = values.get(position).getSize() / MB;
 		entryDiskSize.setText(format.format(diskSizeMBs) + "MB");	
 		
 		ImageView imageView = (ImageView) rowView.findViewById(R.id.deviceIcon);		
 		try {
 			imageView.setImageDrawable(
-					context.getPackageManager().getApplicationIcon(values.get(position).getPackageNamespace()));
+					context.getPackageManager().getApplicationIcon(
+							values.get(position).getPackageNamespace()));
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}

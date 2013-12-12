@@ -11,5 +11,8 @@
     <string name="total_size">Total Size</string>
     <string name="file_system">Last Used</string>
     <string name="service_name">MemoryLoss launch scanner</string>
+    <string name="launch">Launch</string>
+    <string name="playstore">PlayStore</string>
+    <string name="uninstall">Uninstall</string>
 
 </resources>
