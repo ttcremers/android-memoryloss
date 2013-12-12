@@ -3,12 +3,14 @@ package com.theodoorthomas.android.memoryloss.services;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.joda.time.DateTime;
+
 import android.util.Log;
 
-public class PkgInformation implements Serializable, Comparable<PkgInformation> {
+public class PkgInformation implements Serializable {
 	private static final long serialVersionUID = -8770364457873710287L;
 	
-	private Date lastActive;
+	private DateTime lastActive;
 	private long size;
 	private String displayName;
 	private String packageNamespace;
@@ -36,10 +38,10 @@ public class PkgInformation implements Serializable, Comparable<PkgInformation> 
 	public void setPackageNamespace(String packageNamespace) {
 		this.packageNamespace = packageNamespace;
 	}
-	public Date getLastActive() {
+	public DateTime getLastActive() {
 		return lastActive;
 	}
-	public void setLastActive(Date lastActive) {
+	public void setLastActive(DateTime lastActive) {
 		this.lastActive = lastActive;
 	}
 	public long getSize() {
@@ -53,10 +55,5 @@ public class PkgInformation implements Serializable, Comparable<PkgInformation> 
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	@Override
-	public int compareTo(PkgInformation another) {
-		return Long.valueOf(another.getSize()).compareTo(this.getSize());
 	}
 }

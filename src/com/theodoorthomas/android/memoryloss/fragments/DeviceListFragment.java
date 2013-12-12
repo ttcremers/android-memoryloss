@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.joda.time.JodaTimePermission;
+
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import com.google.common.collect.ComparisonChain;
 import com.theodoorthomas.android.memoryloss.DevicesListAdapter;
 import com.theodoorthomas.android.memoryloss.PackageArrayList;
 import com.theodoorthomas.android.memoryloss.R;
@@ -30,11 +33,18 @@ public class DeviceListFragment extends ListFragment {
 			
 			Collections.sort(packageSizeMeta, new Comparator<PkgInformation>() {
 				@Override
-				public int compare(PkgInformation lhs, PkgInformation rhs) {					
-					return lhs.getLastActive().compareTo(rhs.getLastActive());
+				public int compare(PkgInformation lhs, PkgInformation rhs) {
+					int sizeComp = Long.valueOf(rhs.getSize()).compareTo(
+							Long.valueOf(lhs.getSize()));
+					int dateComp = lhs.getLastActive().withTimeAtStartOfDay()
+							.compareTo(rhs.getLastActive().withTimeAtStartOfDay()); 
+
+					if ( sizeComp == 1 && dateComp == 1) {
+						return 1;
+					}
+					return sizeComp;	
 				}
 			});
-			Collections.sort(packageSizeMeta);
 			
 			DevicesListAdapter<File> adapter = 
 				new DevicesListAdapter<File>(getActivity(),

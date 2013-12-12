@@ -43,7 +43,7 @@ public class DevicesListAdapter<T> extends ArrayAdapter<PkgInformation> {
 		
 		TextView lastUsed = (TextView)
 				rowView.findViewById(R.id.entry_filesystem_value);
-		lastUsed.setText(values.get(position).getLastActive().toString());
+		lastUsed.setText(values.get(position).getLastActive().toLocalDate().toString());
 		
 		TextView entryDiskSize = 
 				(TextView) rowView.findViewById(R.id.table_entry_size);

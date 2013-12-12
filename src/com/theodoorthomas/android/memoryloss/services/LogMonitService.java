@@ -12,6 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+
+import org.joda.time.DateTime;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -76,13 +79,6 @@ public class LogMonitService extends Service {
 		BugSenseHandler.initAndStartSession(this, "ec55b9e6");
 	}
 
-//	// As soon as a client connects to the bus send data
-//	@Produce public PackageArrayList<PkgInformation> produceAnswer() {
-//	    // Assuming 'packageLaunchInformation' is filled.
-//		Log.d(TAG, "Client connected to bus, lets send it our latest cached data");
-//	    return packageLaunchInformation;
-//	}
-
 	private void getInstalledPackages() {		
 		List<PackageInfo> list = pm.getInstalledPackages(0);		
 		for (PackageInfo pi : list) {
@@ -90,15 +86,15 @@ public class LogMonitService extends Service {
 				ApplicationInfo ai = pm.getApplicationInfo(pi.packageName,0);
 				if (pm.getLaunchIntentForPackage(pi.packageName) != null &&
 						!ai.sourceDir.contains("/system")) {
+					
+					PkgInformation pkgInfo = new PkgInformation();
+					pkgInfo.setPackageNamespace(pi.packageName);											
+					pkgInfo.setSize(getInstallAppSizeHack(pkgInfo));		                	
+					
 					if (packageLaunchInformation.contains(pi.packageName)) {
-						PkgInformation pkgInfo = new PkgInformation();
-						pkgInfo.setPackageNamespace(pi.packageName);
-						getInstallAppSizeHack(pkgInfo);
 						updatePkgLaunchInfoForApp(pi.packageName, pkgInfo.getSize(), null);
 					} else {
-						PkgInformation pkgInfo = new PkgInformation();
-						pkgInfo.setLastActive(new Date(pi.lastUpdateTime));
-						pkgInfo.setPackageNamespace(ai.packageName);
+						pkgInfo.setLastActive(new DateTime(pi.lastUpdateTime));
 						pkgInfo.setDisplayName((String)
 								getPackageManager().getApplicationLabel(ai));
 						getInstallAppSizeHack(pkgInfo);					
@@ -111,41 +107,60 @@ public class LogMonitService extends Service {
 		}
 	}
 
-	@SuppressLint("NewApi") private void getInstallAppSizeHack(final PkgInformation pkgInfo) {
-		Method getPackageSizeInfo;
-		try {
-			getPackageSizeInfo = getPackageManager().getClass().getMethod(
-					"getPackageSizeInfo", String.class, IPackageStatsObserver.class);
-			getPackageSizeInfo.invoke(getPackageManager(), pkgInfo.getPackageNamespace(),
-					new IPackageStatsObserver.Stub() {
-
-				public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
-						throws RemoteException {
-
-					Long externalCodeSize = 0l;
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-						externalCodeSize = pStats.externalCodeSize;
-					}
+	@SuppressLint("NewApi") private synchronized long getInstallAppSizeHack(final PkgInformation pkgInfo) {
+		final long[] rvContainer = new long[1];
+		
+		// Start a Semaphore so we can have a method that actually return a long eg: wait until we have a value
+		final Semaphore semaphore = new Semaphore(0);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Method getPackageSizeInfo;
+					getPackageSizeInfo = getPackageManager().getClass().getMethod(
+							"getPackageSizeInfo", String.class, IPackageStatsObserver.class);
+					getPackageSizeInfo.invoke(getPackageManager(), pkgInfo.getPackageNamespace(),
+							new IPackageStatsObserver.Stub() {
+						
+						public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
+								throws RemoteException {
+							
+							Long externalCodeSize = 0l;
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+								externalCodeSize = pStats.externalCodeSize;
+							}
+							
+							pkgInfo.setSize(Long.valueOf(pStats.codeSize + 
+									pStats.dataSize + 
+									pStats.cacheSize + 
+									pStats.externalDataSize +
+									pStats.externalCacheSize +
+									externalCodeSize +
+									pStats.externalMediaSize +
+									pStats.externalObbSize));
+							
+							rvContainer[0] = pkgInfo.getSize();
+							semaphore.release();
+						}
+					});		
 					
-					pkgInfo.setSize(Long.valueOf(pStats.codeSize + 
-							pStats.dataSize + 
-							pStats.cacheSize + 
-							pStats.externalDataSize +
-							pStats.externalCacheSize +
-							externalCodeSize +
-							pStats.externalMediaSize +
-							pStats.externalObbSize));
-				}
-			});
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} 
+			}
+		}).start();
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+		return rvContainer[0];
 	}
 	
 	private void getRunningPackages() {		
@@ -153,17 +168,17 @@ public class LogMonitService extends Service {
 		List<RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
 		for (RunningAppProcessInfo rpi : runningProcesses) {
 			if (packageLaunchInformation.contains(rpi.processName)) {
-				updatePkgLaunchInfoForApp(rpi.processName, 0, new Date());				
+				updatePkgLaunchInfoForApp(rpi.processName, 0, new DateTime());				
 			} 
 		} 
 	}
 
-	private void updatePkgLaunchInfoForApp(String processName, long size, Date date) {
+	private void updatePkgLaunchInfoForApp(String processName, long size, DateTime date) {
 		for ( int i = 0; i < packageLaunchInformation.size(); i++ ) {
 			PkgInformation pkgInfo = packageLaunchInformation.get(i);
 			if ( pkgInfo.getPackageNamespace().equals(processName) ) {	
 				Log.w(TAG, "Updating data for: " + processName+ " to: " + date + " / " + size);
-				Date newDate = date == null ? pkgInfo.getLastActive() : date;
+				DateTime newDate = date == null ? pkgInfo.getLastActive() : date;
 				pkgInfo.setLastActive(newDate);
 				Long newSize = size == 0 ? pkgInfo.getSize() : size;
 				pkgInfo.setSize(newSize);
@@ -173,7 +188,7 @@ public class LogMonitService extends Service {
 		}
 	}
 	
-    private void handleIntent() {
+    private synchronized void handleIntent() {
         // do the actual work, in a separate thread
         new PollTask().execute();
     }
