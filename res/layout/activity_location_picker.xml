@@ -6,11 +6,4 @@
     android:focusable="false" 
     android:baselineAligned="false">
 
-    <!-- fragment
-        android:id="@+id/fragment_device_chooser"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"        
-        class="com.theodoorthomas.android.memoryloss.fragments.DeviceListFragment" / -->
-
-
 </FrameLayout>
