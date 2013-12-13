@@ -1,10 +1,10 @@
-package com.theodoorthomas.android.memoryloss.fragments;
+package com.vicinitysoftware.android.memoryloss.fragments;
 
 import java.io.File;
 import java.text.DecimalFormat;
 
-import com.theodoorthomas.android.memoryloss.R;
-import com.theodoorthomas.android.memoryloss.Util;
+import com.vicinitysoftware.android.memoryloss.R;
+import com.vicinitysoftware.android.memoryloss.Util;
 
 import android.app.Fragment;
 import android.os.Bundle;

@@ -1,6 +1,6 @@
-package com.theodoorthomas.android.memoryloss;
+package com.vicinitysoftware.android.memoryloss;
 
-import com.theodoorthomas.android.memoryloss.services.LogMonitService;
+import com.vicinitysoftware.android.memoryloss.services.LogMonitService;
 
 import android.app.Activity;
 import android.app.AlarmManager;

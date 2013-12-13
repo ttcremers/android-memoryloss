@@ -1,4 +1,4 @@
-package com.theodoorthomas.android.memoryloss;
+package com.vicinitysoftware.android.memoryloss;
 
 import java.io.BufferedReader;
 import java.io.File;

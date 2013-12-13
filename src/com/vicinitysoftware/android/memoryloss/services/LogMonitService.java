@@ -1,4 +1,4 @@
-package com.theodoorthomas.android.memoryloss.services;
+package com.vicinitysoftware.android.memoryloss.services;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,8 +35,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.bugsense.trace.BugSenseHandler;
-import com.theodoorthomas.android.memoryloss.MainThreadBus;
-import com.theodoorthomas.android.memoryloss.PackageArrayList;
+import com.vicinitysoftware.android.memoryloss.MainThreadBus;
+import com.vicinitysoftware.android.memoryloss.PackageArrayList;
 
 public class LogMonitService extends Service {	
 	private static final String TAG = "MemoryLossService";
@@ -78,6 +78,20 @@ public class LogMonitService extends Service {
 		super.onCreate();	
 		BugSenseHandler.initAndStartSession(this, "ec55b9e6");
 	}
+	
+	private int calculateEntryWeight(PkgInformation pkgInfo) {
+		boolean isOld = pkgInfo.getLastActive()
+				.isBefore(new DateTime().minusMonths(1));
+		boolean isStale = pkgInfo.getLastActive()
+				.isBefore(new DateTime().minusDays(7));
+		boolean isBig = pkgInfo.getSize() > 104857600;
+		if ( isOld && isBig ) {
+			return 2; // Red
+		} else if ( isOld ) {
+			return 1; // Orange
+		}	
+		return 0; // Green
+	}
 
 	private void getInstalledPackages() {		
 		List<PackageInfo> list = pm.getInstalledPackages(0);		
@@ -97,7 +111,8 @@ public class LogMonitService extends Service {
 						pkgInfo.setLastActive(new DateTime(pi.lastUpdateTime));
 						pkgInfo.setDisplayName((String)
 								getPackageManager().getApplicationLabel(ai));
-						getInstallAppSizeHack(pkgInfo);					
+						getInstallAppSizeHack(pkgInfo);
+						pkgInfo.setWeight(calculateEntryWeight(pkgInfo));
 						packageLaunchInformation.add(pkgInfo);
 					}
 				}
@@ -182,6 +197,7 @@ public class LogMonitService extends Service {
 				pkgInfo.setLastActive(newDate);
 				Long newSize = size == 0 ? pkgInfo.getSize() : size;
 				pkgInfo.setSize(newSize);
+				pkgInfo.setWeight(calculateEntryWeight(pkgInfo));
 				packageLaunchInformation.remove(i);
 				packageLaunchInformation.set(i, pkgInfo);
 			} 
@@ -245,7 +261,7 @@ public class LogMonitService extends Service {
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {			
+	public int onStartCommand(Intent intent, int flags, int startId) {	
 		handleIntent();
 		return Service.START_NOT_STICKY;
 	}

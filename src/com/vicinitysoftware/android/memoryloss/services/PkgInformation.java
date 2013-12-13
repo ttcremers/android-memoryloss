@@ -1,4 +1,4 @@
-package com.theodoorthomas.android.memoryloss.services;
+package com.vicinitysoftware.android.memoryloss.services;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,6 +14,7 @@ public class PkgInformation implements Serializable {
 	private long size;
 	private String displayName;
 	private String packageNamespace;
+	private int weight;
 
 	@Override
 	public int hashCode() {
@@ -55,5 +56,13 @@ public class PkgInformation implements Serializable {
 	}
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	public int getWeight() {
+		return weight;
+	}
+
+	public void setWeight(int weight) {
+		this.weight = weight;
 	}
 }

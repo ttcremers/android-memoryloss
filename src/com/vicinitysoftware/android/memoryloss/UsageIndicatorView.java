@@ -1,4 +1,4 @@
-package com.theodoorthomas.android.memoryloss;
+package com.vicinitysoftware.android.memoryloss;
 
 import android.content.Context;
 import android.graphics.Canvas;

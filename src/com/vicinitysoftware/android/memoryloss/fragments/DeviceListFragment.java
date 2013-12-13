@@ -1,10 +1,8 @@
-package com.theodoorthomas.android.memoryloss.fragments;
+package com.vicinitysoftware.android.memoryloss.fragments;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
-
-import org.joda.time.JodaTimePermission;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -13,11 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import com.google.common.collect.ComparisonChain;
-import com.theodoorthomas.android.memoryloss.DevicesListAdapter;
-import com.theodoorthomas.android.memoryloss.PackageArrayList;
-import com.theodoorthomas.android.memoryloss.R;
-import com.theodoorthomas.android.memoryloss.services.PkgInformation;
+import com.vicinitysoftware.android.memoryloss.DevicesListAdapter;
+import com.vicinitysoftware.android.memoryloss.PackageArrayList;
+import com.vicinitysoftware.android.memoryloss.R;
+import com.vicinitysoftware.android.memoryloss.services.PkgInformation;
 
 public class DeviceListFragment extends ListFragment {
 	private static final String LOG_TAG = "MemoryLoss";
@@ -36,13 +33,12 @@ public class DeviceListFragment extends ListFragment {
 				public int compare(PkgInformation lhs, PkgInformation rhs) {
 					int sizeComp = Long.valueOf(rhs.getSize()).compareTo(
 							Long.valueOf(lhs.getSize()));
-					int dateComp = lhs.getLastActive().withTimeAtStartOfDay()
-							.compareTo(rhs.getLastActive().withTimeAtStartOfDay()); 
+					int weightComp = Integer.valueOf(rhs.getWeight()).compareTo(lhs.getWeight()); 
 
-					if ( sizeComp == 1 && dateComp == 1) {
-						return 1;
+					if ( weightComp == 0 ) {
+						return sizeComp;
 					}
-					return sizeComp;	
+					return weightComp;	
 				}
 			});
 			

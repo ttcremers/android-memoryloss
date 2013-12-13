@@ -1,10 +1,14 @@
-package com.theodoorthomas.android.memoryloss;
+package com.vicinitysoftware.android.memoryloss;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import org.joda.time.DateTime;
+
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.theodoorthomas.android.memoryloss.services.PkgInformation;
+import com.vicinitysoftware.android.memoryloss.R;
+import com.vicinitysoftware.android.memoryloss.services.PkgInformation;
 
 public class DevicesListAdapter<T> extends ArrayAdapter<PkgInformation> {
 	private static final String TAG = "DeviceListAdapter";
@@ -57,6 +62,17 @@ public class DevicesListAdapter<T> extends ArrayAdapter<PkgInformation> {
 							values.get(position).getPackageNamespace()));
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
+		}
+		
+		// 1 = orange drop 
+		// 2 = red drop
+		// 3 = green drop (default)
+		if ( values.get(position).getWeight() == 1 ) {
+			Drawable img = context.getResources().getDrawable(R.drawable.drop_orange);
+			textView.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+		} else if ( values.get(position).getWeight() == 2 ) {
+			Drawable img = context.getResources().getDrawable(R.drawable.drop_red);
+			textView.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
 		}
 		
 		return rowView;

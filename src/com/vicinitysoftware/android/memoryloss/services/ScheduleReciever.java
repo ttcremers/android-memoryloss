@@ -1,4 +1,4 @@
-package com.theodoorthomas.android.memoryloss.services;
+package com.vicinitysoftware.android.memoryloss.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

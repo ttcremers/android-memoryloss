@@ -1,4 +1,4 @@
-package com.theodoorthomas.android.memoryloss;
+package com.vicinitysoftware.android.memoryloss;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -11,18 +11,16 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.bugsense.trace.BugSenseHandler;
 import com.squareup.otto.Subscribe;
-import com.theodoorthomas.android.memoryloss.R.id;
-import com.theodoorthomas.android.memoryloss.fragments.DeviceListFragment;
-import com.theodoorthomas.android.memoryloss.fragments.DeviceListFragment.DeviceListInterface;
-import com.theodoorthomas.android.memoryloss.services.LogMonitService;
-import com.theodoorthomas.android.memoryloss.services.PkgInformation;
+import com.vicinitysoftware.android.memoryloss.R.id;
+import com.vicinitysoftware.android.memoryloss.fragments.DeviceListFragment;
+import com.vicinitysoftware.android.memoryloss.fragments.DeviceListFragment.DeviceListInterface;
+import com.vicinitysoftware.android.memoryloss.services.LogMonitService;
+import com.vicinitysoftware.android.memoryloss.services.PkgInformation;
 
 public class LocationPicker extends Activity implements DeviceListInterface {
 	private static final String LOG_TAG = "MemoryLoss";
@@ -54,6 +52,7 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 		
 		setContentView(R.layout.activity_location_picker);
 		locationPickerContainerView = (FrameLayout) findViewById(R.id.activity_location_container);
+		
 		new MainThreadBus().register(this);	
 	}
 	

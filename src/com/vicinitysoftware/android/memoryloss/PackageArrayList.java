@@ -1,9 +1,9 @@
-package com.theodoorthomas.android.memoryloss;
+package com.vicinitysoftware.android.memoryloss;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.theodoorthomas.android.memoryloss.services.PkgInformation;
+import com.vicinitysoftware.android.memoryloss.services.PkgInformation;
 
 public class PackageArrayList<T> extends ArrayList<PkgInformation> {
 	private static final long serialVersionUID = 3232141627726656599L;
