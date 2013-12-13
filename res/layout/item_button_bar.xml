@@ -1,41 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/button_bar"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:focusable="false" 
     android:visibility="gone"
-    android:id="@+id/button_bar" >
+    android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/button_launch"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="3dp"
-        android:layout_marginLeft="0dp"
-        android:background="@drawable/memory_loss_button"
-        android:text="@string/launch" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/button_playstore"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="3dp"
-        android:background="@drawable/memory_loss_button"
-        android:text="@string/playstore" />
+        <Button
+            android:id="@+id/button_launch"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="100dp"
+            android:layout_marginBottom="2dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/memory_loss_button"
+            android:text="@string/launch" />
 
-    <Button
-        android:id="@+id/button_uninstall"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="3dp"
-        android:background="@drawable/memory_loss_button"
-        android:text="@string/uninstall" />
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_marginLeft="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/launch_help"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/tableRow2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/button_playstore"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/memory_loss_button"
+            android:text="@string/playstore"
+            android:layout_marginBottom="2dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_marginLeft="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/playstore_help"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tableRow3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/button_uninstall"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/memory_loss_button"
+            android:text="@string/uninstall"
+            android:layout_marginBottom="2dp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_marginLeft="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/uninstall_help"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    </LinearLayout>
+
+</TableLayout>

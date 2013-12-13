@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
 
-    <com.theodoorthomas.android.memoryloss.UsageIndicatorView
+    <com.vicinitysoftware.android.memoryloss.UsageIndicatorView
         android:id="@+id/usageIndicatorView1"
         android:layout_width="match_parent"
         android:layout_height="10dp"

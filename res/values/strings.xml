@@ -14,5 +14,8 @@
     <string name="launch">Launch</string>
     <string name="playstore">PlayStore</string>
     <string name="uninstall">Uninstall</string>
+    <string name="uninstall_help">Clean up and free up!</string>
+    <string name="playstore_help">Forgot what this app does? Look it up in the PlayStore</string>
+    <string name="launch_help">Launch this app</string>
 
 </resources>
