@@ -1,91 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
+    android:background="#00000000"
+    android:cacheColorHint="#00000000"
     android:divider="@drawable/list_divider"
     android:dividerHeight="1px"
     android:focusable="false"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="5dp"
     android:showDividers="end" >
-
-    <ImageView
-        android:id="@+id/deviceIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:clickable="false"
-        android:contentDescription="@string/icon_that_represents_device_type"
-        android:focusable="false"
-        android:paddingRight="5dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
-        android:orientation="vertical" >
+        android:orientation="horizontal" >
 
-        <TextView
-            android:id="@+id/devicePath"
-            style="@android:style/TextAppearance.Medium"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/deviceIcon"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:clickable="false"
-            android:drawableRight="@drawable/drop_green"
+            android:contentDescription="@string/icon_that_represents_device_type"
             android:focusable="false"
-            android:gravity="center_vertical"
-            android:text="/example/path" >
-        </TextView>
+            android:paddingRight="5dp"
+            android:src="@android:drawable/ic_menu_report_image" />
 
-        <TableLayout
-            android:id="@+id/directory_information"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/meta"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/textHoverMedium" >
+            android:orientation="vertical" >
 
-            <TableRow
-                android:id="@+id/directory_information_size"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+            <TextView
+                android:id="@+id/devicePath"
+                style="@android:style/TextAppearance.Medium"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:drawableRight="@drawable/drop_green"
+                android:focusable="false"
+                android:gravity="center_vertical"
+                android:text="/example/path" >
+            </TextView>
 
-                <TextView
-                    android:id="@+id/table_entry_size"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/total_size"
-                    android:textAppearance="@style/textHoverSmall" />
+            <TableLayout
+                android:id="@+id/directory_information"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/textHoverMedium" >
 
-                <TextView
-                    android:id="@+id/table_value_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:textAppearance="@style/textHoverSmall" />
-            </TableRow>
+                <TableRow
+                    android:id="@+id/directory_information_size"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
 
-            <TableRow
-                android:id="@+id/directory_information_entry2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                    <TextView
+                        android:id="@+id/table_entry_size"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/total_size"
+                        android:textAppearance="@style/textHoverSmall" />
 
-                <TextView
-                    android:id="@+id/entry_filesystem_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/file_system"
-                    android:textAppearance="@style/textHoverSmall" />
+                    <TextView
+                        android:id="@+id/table_value_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:textAppearance="@style/textHoverSmall" />
+                </TableRow>
 
-                <TextView
-                    android:id="@+id/entry_filesystem_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:text="Small Text"
-                    android:textAppearance="@style/textHoverSmall" />
-            </TableRow>
-        </TableLayout>
+                <TableRow
+                    android:id="@+id/directory_information_entry2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
 
-        <include layout="@layout/item_button_bar" />
+                    <TextView
+                        android:id="@+id/entry_filesystem_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/file_system"
+                        android:textAppearance="@style/textHoverSmall" />
+
+                    <TextView
+                        android:id="@+id/entry_filesystem_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:text="Small Text"
+                        android:textAppearance="@style/textHoverSmall" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
     </LinearLayout>
+
+    <include layout="@layout/item_button_bar" />
 
 </LinearLayout>

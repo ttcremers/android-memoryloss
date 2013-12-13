@@ -2,28 +2,30 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/button_bar"
     android:layout_width="match_parent"
-    android:visibility="gone"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    android:visibility="gone" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp" >
 
         <Button
             android:id="@+id/button_launch"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="100dp"
-            android:layout_marginBottom="2dp"
             android:layout_height="wrap_content"
             android:background="@drawable/memory_loss_button"
             android:text="@string/launch" />
 
         <TextView
             android:id="@+id/textView1"
-            android:layout_marginLeft="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
             android:text="@string/launch_help"
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
@@ -31,7 +33,8 @@
     <LinearLayout
         android:id="@+id/tableRow2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp" >
 
         <Button
             android:id="@+id/button_playstore"
@@ -39,24 +42,23 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:background="@drawable/memory_loss_button"
-            android:text="@string/playstore"
-            android:layout_marginBottom="2dp" />
+            android:text="@string/playstore" />
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_marginLeft="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
             android:text="@string/playstore_help"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/tableRow3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp" >
 
         <Button
             android:id="@+id/button_uninstall"
@@ -64,18 +66,16 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:background="@drawable/memory_loss_button"
-            android:text="@string/uninstall"
-            android:layout_marginBottom="2dp" />
+            android:text="@string/uninstall" />
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_marginLeft="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
             android:text="@string/uninstall_help"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-
     </LinearLayout>
 
 </TableLayout>

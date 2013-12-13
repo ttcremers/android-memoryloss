@@ -16,7 +16,7 @@ public class DeviceBootReciever extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i("MemoryLossService", "Starting MemoryLoss app monitor service!");
+		Log.i("MemoryLoss", "Starting MemoryLoss app monitor service");
 		Intent monitService = new Intent(context, 
 				LogMonitService.class);
 		PendingIntent sender = PendingIntent.getService(context, 0, monitService, PendingIntent.FLAG_UPDATE_CURRENT);

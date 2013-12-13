@@ -54,8 +54,6 @@ public class DeviceListFragment extends ListFragment {
 	@Override
 	public void onAttach(Activity activity) {		
 		super.onAttach(activity);
-//		getListView().addHeaderView(
-//				activity.getLayoutInflater().inflate(R.layout.location_picker_list_header, null));
 		if (activity instanceof DeviceListInterface) {
 			listener = (DeviceListInterface) activity;
 			listener.onReadyForPopulation(this);
@@ -67,7 +65,6 @@ public class DeviceListFragment extends ListFragment {
 	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		Log.d(LOG_TAG, "List view click: " + id);
 		listener.onDeviceClicked(v, position);
 	}
 	

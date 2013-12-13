@@ -71,7 +71,6 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 	
 	// Response to BUS messages
 	@Subscribe public void answerAvailable(PackageArrayList<PkgInformation> event) {
-		Log.w(LOG_TAG, "Recieved message on bus");
 		if ( !isListItemExpanded ) {			
 			packageMetaData = event;
 			handler.post(new Runnable() {				
@@ -85,13 +84,12 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 				}
 			});
 		} else {
-			Log.d(LOG_TAG, "Item expanded skipping refresh");
+			Log.i(LOG_TAG, "Item expanded skipping refresh");
 		}
 	}
 
 	@Override
 	public void onDeviceClicked(View v, int postion) {		
-		Log.d(LOG_TAG, "Implementing Activity recieved ");
 		LinearLayout buttonBar = (LinearLayout)v.findViewById(id.button_bar);
 		
 		if ( isListItemExpanded ) {
@@ -163,7 +161,6 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 
 	@Override
 	public void onReadyForPopulation(DeviceListFragment deviceListFragment) {
-		Log.d(LOG_TAG, "Recieved data from the bus with which we can fill the list view");
 		deviceListFragment.setAndPopulateAdapter(packageMetaData);
 	}
 }

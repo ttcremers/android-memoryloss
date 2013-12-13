@@ -2,9 +2,10 @@
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@android:id/list"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    tools:listheader="@layout/location_picker_list_header"
+    android:background="#00000000"
+    android:cacheColorHint="#00000000"
     tools:listitem="@layout/location_picker_list_row" >
 
 </ListView>

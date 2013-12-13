@@ -48,7 +48,7 @@ public class LogMonitService extends Service {
 	private PackageManager pm;	
 	
 	private void updateAppMetaData() {
-		Log.d(TAG, "Updating package stats!...");
+		Log.i(TAG, "Updating package stats");
 		getInstalledPackages();
 		getRunningPackages();
 		bus.post(packageLaunchInformation);
@@ -70,7 +70,6 @@ public class LogMonitService extends Service {
 				Log.e(TAG, "Error closing object cache", e);
 			}
 		}
-		Log.d(TAG, "Updating package stats! DONE");
 	}
 	
 	@Override
@@ -80,16 +79,20 @@ public class LogMonitService extends Service {
 	}
 	
 	private int calculateEntryWeight(PkgInformation pkgInfo) {
+		boolean isStale = pkgInfo.getLastActive()
+				.isBefore(new DateTime().minusDays(10));
 		boolean isOld = pkgInfo.getLastActive()
 				.isBefore(new DateTime().minusMonths(1));
-		boolean isStale = pkgInfo.getLastActive()
-				.isBefore(new DateTime().minusDays(7));
 		boolean isBig = pkgInfo.getSize() > 104857600;
-		if ( isOld && isBig ) {
+		boolean isHuge = pkgInfo.getSize() > 1073741824;
+		 
+		if ( isOld && isBig ) 
 			return 2; // Red
-		} else if ( isOld ) {
+		else if ( isStale && isHuge ) 
+			return 2; // Red
+		else if ( isOld ) 
 			return 1; // Orange
-		}	
+			
 		return 0; // Green
 	}
 
@@ -192,7 +195,7 @@ public class LogMonitService extends Service {
 		for ( int i = 0; i < packageLaunchInformation.size(); i++ ) {
 			PkgInformation pkgInfo = packageLaunchInformation.get(i);
 			if ( pkgInfo.getPackageNamespace().equals(processName) ) {	
-				Log.w(TAG, "Updating data for: " + processName+ " to: " + date + " / " + size);
+				Log.i(TAG, "Updating data for: " + processName);
 				DateTime newDate = date == null ? pkgInfo.getLastActive() : date;
 				pkgInfo.setLastActive(newDate);
 				Long newSize = size == 0 ? pkgInfo.getSize() : size;
