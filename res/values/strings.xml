@@ -17,5 +17,7 @@
     <string name="uninstall_help">Clean up and free up!</string>
     <string name="playstore_help">Forgot what this app does? Look it up in the PlayStore</string>
     <string name="launch_help">Launch this app</string>
+    <string name="select_the_apps_you_use_regularly">Select the Apps you use regularly</string>
+    <string name="first_start_help">To get the learning algorithm of to a good start, select the apps you use most often. You don\'t have to be precise MemoryLoss will learn and fill in the rest. \n        \n        You can skip this step if you don\'t know what it means</string>
 
 </resources>

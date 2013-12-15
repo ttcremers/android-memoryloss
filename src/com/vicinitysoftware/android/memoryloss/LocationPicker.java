@@ -2,6 +2,7 @@ package com.vicinitysoftware.android.memoryloss;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -41,6 +42,10 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 		BugSenseHandler.initAndStartSession(this, "ec55b9e6");
 		super.onCreate(savedInstanceState);
         
+		FragmentManager fm = getFragmentManager();
+		FirstStartDialog firstStartDialog = new FirstStartDialog();
+		firstStartDialog.show(fm, "first_start_dialog");
+		
 		Intent intent = new Intent(this, 
 				LogMonitService.class);
 		PendingIntent sender = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
