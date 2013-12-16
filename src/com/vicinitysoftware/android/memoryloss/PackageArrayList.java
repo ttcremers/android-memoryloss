@@ -1,11 +1,12 @@
 package com.vicinitysoftware.android.memoryloss;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.vicinitysoftware.android.memoryloss.services.PkgInformation;
 
-public class PackageArrayList<T> extends ArrayList<PkgInformation> {
+public class PackageArrayList<T> extends ArrayList<PkgInformation> implements Serializable {
 	private static final long serialVersionUID = 3232141627726656599L;
 	
 	public PackageArrayList() {		

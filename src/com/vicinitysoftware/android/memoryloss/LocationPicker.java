@@ -31,6 +31,7 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 	private FrameLayout locationPickerContainerView;
 	private boolean isListItemExpanded = false;
 	private View previousExpandedView;
+	private PendingIntent sender;
 	
 	private Handler handler = new Handler();
 	
@@ -41,24 +42,18 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 		}				
 		BugSenseHandler.initAndStartSession(this, "ec55b9e6");
 		super.onCreate(savedInstanceState);
+		
+		Intent intent = new Intent(this, LogMonitService.class);
+		sender = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
+		am.cancel(sender); // cancel any existing alarms
         
 		FragmentManager fm = getFragmentManager();
 		FirstStartDialog firstStartDialog = new FirstStartDialog();
 		firstStartDialog.show(fm, "first_start_dialog");
 		
-		Intent intent = new Intent(this, 
-				LogMonitService.class);
-		PendingIntent sender = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
-		am.cancel(sender); // cancel any existing alarms
-		// Math.round(AlarmManager.INTERVAL_FIFTEEN_MINUTES / 6)
-		am.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 
-				10000, sender);
-		
 		setContentView(R.layout.activity_location_picker);
-		locationPickerContainerView = (FrameLayout) findViewById(R.id.activity_location_container);
-		
-		new MainThreadBus().register(this);	
+		locationPickerContainerView = (FrameLayout) findViewById(R.id.activity_location_container);		
 	}
 	
 	@Override
@@ -167,5 +162,15 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 	@Override
 	public void onReadyForPopulation(DeviceListFragment deviceListFragment) {
 		deviceListFragment.setAndPopulateAdapter(packageMetaData);
+	}
+
+	@Override
+	public void onInitialStartCompleted() {
+		new MainThreadBus().register(this);	
+
+		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
+		// Math.round(AlarmManager.INTERVAL_FIFTEEN_MINUTES / 6)
+		am.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 
+				10000, sender);		
 	}
 }

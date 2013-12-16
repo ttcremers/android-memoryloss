@@ -1,6 +1,5 @@
 package com.vicinitysoftware.android.memoryloss.services;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -40,7 +38,7 @@ import com.vicinitysoftware.android.memoryloss.PackageArrayList;
 
 public class LogMonitService extends Service {	
 	private static final String TAG = "MemoryLossService";
-	private static final String OBJECT_CACHE_FILE = "object.cache";
+	public static final String OBJECT_CACHE_FILE = "object.cache";
 	
 	private PackageArrayList<PkgInformation> packageLaunchInformation;
 
@@ -202,7 +200,10 @@ public class LogMonitService extends Service {
 				pkgInfo.setSize(newSize);
 				pkgInfo.setWeight(calculateEntryWeight(pkgInfo));
 				packageLaunchInformation.remove(i);
-				packageLaunchInformation.set(i, pkgInfo);
+				if ( i == packageLaunchInformation.size() )
+					packageLaunchInformation.add(pkgInfo);
+				else
+					packageLaunchInformation.set(i, pkgInfo);
 			} 
 		}
 	}
@@ -219,7 +220,7 @@ public class LogMonitService extends Service {
 			//Open file and read the saved object back.
 			FileInputStream fileInputStream = null;
 			try {
-				if (new File(OBJECT_CACHE_FILE).exists()) {
+				if ( getFileStreamPath(LogMonitService.OBJECT_CACHE_FILE).exists() ) {
 					fileInputStream = openFileInput(OBJECT_CACHE_FILE);
 					//Open File Stream and cast it into array of ItemAttributes
 					ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);

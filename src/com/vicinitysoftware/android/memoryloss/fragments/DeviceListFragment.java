@@ -17,7 +17,7 @@ import com.vicinitysoftware.android.memoryloss.R;
 import com.vicinitysoftware.android.memoryloss.services.PkgInformation;
 
 public class DeviceListFragment extends ListFragment {
-	private static final String LOG_TAG = "MemoryLoss";
+	private static final String TAG = "MemoryLoss";
 	private DeviceListInterface listener;
 	
 	@Override
@@ -80,6 +80,7 @@ public class DeviceListFragment extends ListFragment {
 	 *
 	 */
 	public interface DeviceListInterface {
+		public void onInitialStartCompleted();
 		public void onDeviceClicked(View v, int position);
 		public void onReadyForPopulation(DeviceListFragment deviceListFragment);
 	}
