@@ -1,6 +1,7 @@
 package com.vicinitysoftware.android.memoryloss.fragments;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -22,7 +23,7 @@ public class DeviceListFragment extends ListFragment {
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);		
+		super.onActivityCreated(savedInstanceState);
 	}
 
 	public void setAndPopulateAdapter(PackageArrayList<PkgInformation> packageSizeMeta) {
@@ -80,7 +81,7 @@ public class DeviceListFragment extends ListFragment {
 	 *
 	 */
 	public interface DeviceListInterface {
-		public void onInitialStartCompleted();
+		public void onInitialStartCompleted(ArrayList<String> pkgs);
 		public void onDeviceClicked(View v, int position);
 		public void onReadyForPopulation(DeviceListFragment deviceListFragment);
 	}

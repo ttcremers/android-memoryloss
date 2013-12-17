@@ -1,5 +1,7 @@
 package com.vicinitysoftware.android.memoryloss;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.FragmentManager;
@@ -31,7 +33,6 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 	private FrameLayout locationPickerContainerView;
 	private boolean isListItemExpanded = false;
 	private View previousExpandedView;
-	private PendingIntent sender;
 	
 	private Handler handler = new Handler();
 	
@@ -44,7 +45,7 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 		super.onCreate(savedInstanceState);
 		
 		Intent intent = new Intent(this, LogMonitService.class);
-		sender = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent sender = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
 		am.cancel(sender); // cancel any existing alarms
         
@@ -165,10 +166,17 @@ public class LocationPicker extends Activity implements DeviceListInterface {
 	}
 
 	@Override
-	public void onInitialStartCompleted() {
+	public void onInitialStartCompleted(ArrayList<String> pkgs) {
 		new MainThreadBus().register(this);	
-
+		
+		String[] result = new String[20];
+		pkgs.toArray(result);
+		Intent intent = new Intent(this, LogMonitService.class);
+		intent.putExtra("selected_packages", result);
+		PendingIntent sender = PendingIntent.getService(this, 0, 
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
+		am.cancel(sender); // cancel any existing alarms
 		// Math.round(AlarmManager.INTERVAL_FIFTEEN_MINUTES / 6)
 		am.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 
 				10000, sender);		

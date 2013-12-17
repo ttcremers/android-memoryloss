@@ -14,14 +14,15 @@
 
     <GridView
         android:id="@+id/app_grid"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/darker_gray"
-        android:gravity="center"
+        android:gravity="left"
         android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp" 
         android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="2dp" >
+        android:columnWidth="50dp"
+        android:layout_marginBottom="10dp"
+        android:stretchMode="columnWidth">
     </GridView>
 	
     <Button

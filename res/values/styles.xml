@@ -24,4 +24,9 @@
     <style name="textHoverSmall" parent="@android:style/TextAppearance.Small">
         <item name="android:textColor">@color/gray</item>
     </style>
+    
+    <style name="textButtonBar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

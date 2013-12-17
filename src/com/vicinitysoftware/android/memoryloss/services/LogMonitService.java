@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -28,6 +30,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageStats;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -43,7 +46,8 @@ public class LogMonitService extends Service {
 	private PackageArrayList<PkgInformation> packageLaunchInformation;
 
 	private MainThreadBus bus = new MainThreadBus();
-	private PackageManager pm;	
+	private PackageManager pm;
+	private String[] frequentlyUsedPkgs;	
 	
 	private void updateAppMetaData() {
 		Log.i(TAG, "Updating package stats");
@@ -59,7 +63,7 @@ public class LogMonitService extends Service {
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "Error in accessing object cache", e);
 		} catch (IOException e) {
-			Log.e(TAG, "Error comminicating with object cache", e);
+			Log.e(TAG, "Error comminicating with object cache ", e);
 		} finally {
 			try {
 				if ( fileOutputStream != null )
@@ -104,12 +108,17 @@ public class LogMonitService extends Service {
 					
 					PkgInformation pkgInfo = new PkgInformation();
 					pkgInfo.setPackageNamespace(pi.packageName);											
-					pkgInfo.setSize(getInstallAppSizeHack(pkgInfo));		                	
+					pkgInfo.setSize(getInstallAppSizeHack(pkgInfo));
 					
-					if (packageLaunchInformation.contains(pi.packageName)) {
+					if ( packageLaunchInformation.contains(pi.packageName) ) {
 						updatePkgLaunchInfoForApp(pi.packageName, pkgInfo.getSize(), null);
 					} else {
-						pkgInfo.setLastActive(new DateTime(pi.lastUpdateTime));
+						if (Arrays.asList(frequentlyUsedPkgs).contains(pi.packageName)) {
+							Log.w(TAG, "First run notification, updateing run time for package: " + pi.packageName);
+							pkgInfo.setLastActive(new DateTime());
+						} else {
+							pkgInfo.setLastActive(new DateTime(pi.lastUpdateTime));
+						}
 						pkgInfo.setDisplayName((String)
 								getPackageManager().getApplicationLabel(ai));
 						getInstallAppSizeHack(pkgInfo);
@@ -176,39 +185,43 @@ public class LogMonitService extends Service {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-		return rvContainer[0];
+        return rvContainer[0];
 	}
-	
+
 	private void getRunningPackages() {		
 		ActivityManager am = (ActivityManager)this.getSystemService(ACTIVITY_SERVICE);
 		List<RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
 		for (RunningAppProcessInfo rpi : runningProcesses) {
 			if (packageLaunchInformation.contains(rpi.processName)) {
-				updatePkgLaunchInfoForApp(rpi.processName, 0, new DateTime());				
+				updatePkgLaunchInfoForApp(rpi.processName, 0, new DateTime());
 			} 
 		} 
 	}
 
 	private void updatePkgLaunchInfoForApp(String processName, long size, DateTime date) {
-		for ( int i = 0; i < packageLaunchInformation.size(); i++ ) {
-			PkgInformation pkgInfo = packageLaunchInformation.get(i);
-			if ( pkgInfo.getPackageNamespace().equals(processName) ) {	
-				Log.i(TAG, "Updating data for: " + processName);
-				DateTime newDate = date == null ? pkgInfo.getLastActive() : date;
-				pkgInfo.setLastActive(newDate);
-				Long newSize = size == 0 ? pkgInfo.getSize() : size;
-				pkgInfo.setSize(newSize);
-				pkgInfo.setWeight(calculateEntryWeight(pkgInfo));
-				packageLaunchInformation.remove(i);
-				if ( i == packageLaunchInformation.size() )
+		synchronized (packageLaunchInformation) {
+			for ( int i = 0; i < packageLaunchInformation.size(); i++ ) {
+				PkgInformation pkgInfo = packageLaunchInformation.get(i);
+				if ( pkgInfo.getPackageNamespace().equals(processName) ) {	
+					Log.i(TAG, "Updating data for: " + pkgInfo.getPackageNamespace());
+					DateTime newDate = date == null ? pkgInfo.getLastActive() : date;
+					pkgInfo.setLastActive(newDate);
+					Long newSize = size == 0 ? pkgInfo.getSize() : size;
+					pkgInfo.setSize(newSize);
+					pkgInfo.setWeight(calculateEntryWeight(pkgInfo));
+					packageLaunchInformation.remove(i);					
 					packageLaunchInformation.add(pkgInfo);
-				else
-					packageLaunchInformation.set(i, pkgInfo);
-			} 
+					packageLaunchInformation.trimToSize();
+				} 
+			}
 		}
 	}
 	
-    private synchronized void handleIntent() {
+    private synchronized void handleIntent(Intent intent) {
+    	Bundle extras = intent.getExtras();
+    	if (extras.containsKey("selected_packages")) {
+    		frequentlyUsedPkgs = extras.getStringArray("selected_packages");
+    	}
         // do the actual work, in a separate thread
         new PollTask().execute();
     }
@@ -266,7 +279,7 @@ public class LogMonitService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {	
-		handleIntent();
+		handleIntent(intent);
 		return Service.START_NOT_STICKY;
 	}
 	
