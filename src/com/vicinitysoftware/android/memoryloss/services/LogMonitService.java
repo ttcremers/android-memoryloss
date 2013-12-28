@@ -114,7 +114,7 @@ public class LogMonitService extends Service {
 						updatePkgLaunchInfoForApp(pi.packageName, pkgInfo.getSize(), null);
 					} else {
 						if (Arrays.asList(frequentlyUsedPkgs).contains(pi.packageName)) {
-							Log.w(TAG, "First run notification, updateing run time for package: " + pi.packageName);
+							Log.w(TAG, "First run notification, updating run time for package: " + pi.packageName);
 							pkgInfo.setLastActive(new DateTime());
 						} else {
 							pkgInfo.setLastActive(new DateTime(pi.lastUpdateTime));
@@ -209,9 +209,9 @@ public class LogMonitService extends Service {
 					Long newSize = size == 0 ? pkgInfo.getSize() : size;
 					pkgInfo.setSize(newSize);
 					pkgInfo.setWeight(calculateEntryWeight(pkgInfo));
-					packageLaunchInformation.remove(i);					
-					packageLaunchInformation.add(pkgInfo);
+					packageLaunchInformation.remove(i);		
 					packageLaunchInformation.trimToSize();
+					packageLaunchInformation.add(pkgInfo);					
 				} 
 			}
 		}
