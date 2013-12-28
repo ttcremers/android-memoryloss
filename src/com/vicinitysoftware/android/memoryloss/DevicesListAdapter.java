@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.joda.time.DateTime;
 
+import android.R.color;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
@@ -64,15 +65,16 @@ public class DevicesListAdapter<T> extends ArrayAdapter<PkgInformation> {
 			e.printStackTrace();
 		}
 		
+		View colorIndicator = rowView.findViewById(R.id.color_indicator);
 		// 1 = orange drop 
 		// 2 = red drop
 		// 3 = green drop (default)
 		if ( values.get(position).getWeight() == 1 ) {
-			Drawable img = context.getResources().getDrawable(R.drawable.drop_orange);
-			textView.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+			colorIndicator.setBackgroundColor(
+					context.getResources().getColor(color.holo_orange_light));
 		} else if ( values.get(position).getWeight() == 2 ) {
-			Drawable img = context.getResources().getDrawable(R.drawable.drop_red);
-			textView.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+			colorIndicator.setBackgroundColor(
+					context.getResources().getColor(color.holo_red_light));
 		}
 		
 		return rowView;
